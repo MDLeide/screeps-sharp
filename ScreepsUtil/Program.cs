@@ -10,7 +10,12 @@ namespace ScreepsUtil
     {
         static void Main(string[] args)
         {
-            var rotation = new Sandbox.MapRotation();
+            TestMapRotation();
+        }
+
+        static void TestMapRotation()
+        {
+            var rotation = new Sandbox.MapRotationTest();
             rotation.Test(12, 6);
         }
     }
