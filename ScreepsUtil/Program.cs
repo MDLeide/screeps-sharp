@@ -14,14 +14,18 @@ namespace ScreepsUtil
             var path = args[0];
             var typeToNames = Util.DeclarationGenerator.ParseFile(path);
 
-            var typeFile = Util.DeclarationGenerator.makeTypeFile(typeToNames);
-            var typePath = Path.Combine(Directory.GetCurrentDirectory(), "declarations.txt");
+            var typeFile = Util.DeclarationGenerator.MakeTypeFile(typeToNames);
+            var typePath = Path.Combine(Directory.GetCurrentDirectory(), "cashew-types.d.ts.txt");
 
-            var globalFile = Util.DeclarationGenerator.makeGlobalFile(typeToNames);
-            var globalPath = Path.Combine(Directory.GetCurrentDirectory(), "global.txt");
+            var globalExtensionFile = Util.DeclarationGenerator.MakeGlobalExtensionScriptFile(typeToNames);
+            var globalExtensionPath = Path.Combine(Directory.GetCurrentDirectory(), "imp-GlobalConstants.ts.txt");
+
+            var globalDeclarationFile = Util.DeclarationGenerator.MakeGlobalDeclarationFile(typeToNames);
+            var globalDeclarationPath = Path.Combine(Directory.GetCurrentDirectory(), "global-constants.d.ts.txt");
 
             File.WriteAllText(typePath, typeFile);
-            File.WriteAllText(globalPath, globalFile);
+            File.WriteAllText(globalExtensionPath, globalExtensionFile);
+            File.WriteAllText(globalDeclarationPath, globalDeclarationFile);
         }
 
         static void TestMapRotation()

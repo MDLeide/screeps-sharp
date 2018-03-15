@@ -8,6 +8,11 @@ namespace ScreepsUtil.Util
 {
     static class DeclarationGenerator
     {
+        /// <summary>
+        /// Returns a dictionary of Type to Names[]
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public static Dictionary<string, string[]> ParseFile(string path)
         {
             var typeToNames = new Dictionary<string, string[]>();
@@ -43,7 +48,7 @@ namespace ScreepsUtil.Util
             return typeToNames;
         }
 
-        public static string makeTypeFile(Dictionary<string, string[]> typeToNames)
+        public static string MakeTypeFile(Dictionary<string, string[]> typeToNames)
         {
             var sb = new StringBuilder();
             foreach (var kvp in typeToNames)
@@ -64,52 +69,49 @@ namespace ScreepsUtil.Util
 
             return sb.ToString();
         }
-
-        public static string makeGlobalFile(Dictionary<string, string[]> typeToNames)
+        
+        public static string MakeGlobalDeclarationFile(Dictionary<string, string[]> typeToNames)
         {
             var sb = new StringBuilder();
-            sb.AppendLine(makeGlobalExtension(typeToNames));
-            sb.AppendLine(makeGlobalInterface(typeToNames));
+            sb.AppendLine("declare interface global {");
+            foreach (var kvp in typeToNames)
+            {                
+                sb.AppendLine(globalInterfaceLines(kvp.Key, kvp.Value));
+            }
+            sb.Append("}");
             return sb.ToString();
         }
 
-        private static string makeGlobalExtension(Dictionary<string, string[]> typeToNames)
+        public static string MakeGlobalExtensionScriptFile(Dictionary<string, string[]> typeToNames)
         {
             var sb = new StringBuilder();
             foreach (var kvp in typeToNames)
             {
-                sb.AppendLine(globalExtensionLines(kvp.Key, kvp.Value));
+                sb.AppendLine(GlobalExtensionLines(kvp.Key, kvp.Value));
             }
+            sb.AppendLine();
+            sb.AppendLine("export class GlobalConstants {");
+            sb.AppendLine("\tpublic static extend() {");
+            sb.AppendLine("\t}");
+            sb.Append("}");
             return sb.ToString();
         }
-
-        private static string globalExtensionLines(string type, string[] names)
+        
+        private static string GlobalExtensionLines(string type, string[] names)
         {
             var sb = new StringBuilder();
             for (int i = 0; i < names.Length; i++)
             {
-                sb.AppendLine(globalExtensionLine(type, names[i]));
+                sb.AppendLine(GlobalExtensionLine(type, names[i]));
             }
             return sb.ToString();
         }
 
-        private static string globalExtensionLine(string type, string name)
+        private static string GlobalExtensionLine(string type, string name)
         {
             return $"global.{makeIdentifier(type, name)} = {makeQuotedValue(name)};";
         }
-
-        private static string makeGlobalInterface(Dictionary<string, string[]> typeToNames)
-        {
-            var sb = new StringBuilder();
-            sb.AppendLine("interface global {");
-            foreach (var kvp in typeToNames)
-            {
-                sb.AppendLine(globalInterfaceLines(kvp.Key, kvp.Value));
-            }
-            sb.AppendLine("}");
-            return sb.ToString();
-        }
-
+        
         private static string globalInterfaceLines(string type, string[] names)
         {
             var sb = new StringBuilder();
@@ -164,7 +166,7 @@ namespace ScreepsUtil.Util
                 string.Join($" | {Environment.NewLine}",
                 names.Select(p => makeIdentifier(type, p)));
             
-            return $"type {type}Type ={Environment.NewLine}{identifiers};";
+            return $"type {type.Replace("_","")}Type ={Environment.NewLine}{identifiers};";
         }
 
         private static string makeIdentifier(string type, string name)
